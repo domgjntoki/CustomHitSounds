@@ -52,3 +52,4 @@ One way of using the debug mode is setting your game display as window mode, and
 
 Image showing the Debug Mode activated:
 ![Using debug mode](readme_resources/DebugExample.png)
+![Debug Window](readme_resources/DebugLog.png)
