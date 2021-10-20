@@ -16,6 +16,7 @@ using UnityEngine.Networking;
 using System.Threading;
 using Assets.Scripts.PeroTools.AssetBundles;
 using RuntimeAudioClipLoader;
+using Newtonsoft.Json;
 
 namespace CustomHitSounds
 {
@@ -23,6 +24,7 @@ namespace CustomHitSounds
     {
         private static String Custom_Sounds_Path = "Custom_Sounds";
         private static Dictionary<String, String> AudioFiles = new Dictionary<String, String>();
+        private static bool IsDebugModeActivated = false;
         private static string[] possibleFileNames = new string[]
             {
                 ".aiff",
@@ -37,14 +39,57 @@ namespace CustomHitSounds
 
         public string Author => "Dom Gintoki";
 
-        public string HomePage => "";
+        public string HomePage => "https://github.com/domgjntoki/CustomHitSounds";
 
         public void DoPatching()
         {
             Harmony harmony = new Harmony("com.domgintoki.customhitsounds");
+            IsDebugModeActivated = GetDebugModeOption();
             AudioFiles = GetAllAudioFiles();
             harmony.PatchAll();
             ModLogger.Debug("CustomHitSounds loaded successfully");
+        }
+
+        private static void ResetConfigFile(string configPath)
+        {
+            var create = JsonConvert.SerializeObject(new Dictionary<String, bool> {
+                    { "debug_mode", false }
+                });
+            var tw = new StreamWriter(configPath);
+            tw.Write(create);
+            tw.Close();
+        }
+        private static bool GetDebugModeOption()
+        {
+            var configPath = "CustomHitSounds.json";
+            if (!File.Exists(configPath))
+            {
+                ResetConfigFile(configPath);
+                return false;
+            } 
+            else
+            {
+                string json = File.ReadAllText(configPath);
+                Dictionary<String, bool> dict = null;
+                try
+                {
+                    dict = JsonConvert.DeserializeObject<Dictionary<String, bool>>(json);
+                } catch(Exception)  { }
+
+                bool should;
+                if(dict == null || !dict.TryGetValue("debug_mode", out should))
+                {
+                    ModLogger.Debug("Incorrect json file, recreating.");
+                    ResetConfigFile(configPath);
+                    return false;
+                }  else
+                {
+                    return should;
+                }
+
+                                
+            }
+
         }
 
         private static String StripExtension(string filename)
@@ -78,21 +123,47 @@ namespace CustomHitSounds
         [HarmonyPatch]
         class Patch
         {
+            private static List<String> downloaded = new List<String>();
             [HarmonyPostfix]
             [HarmonyPatch(typeof(AssetBundle), "LoadAsset", new Type[] { typeof(string), typeof(Type) })]
             public static void LoadAssetPostfix(string name, Type type, ref UnityEngine.Object __result)
             {
                 var separated = name.Split('/');
                 var filename = separated[separated.Length - 1];
+                if (IsDebugModeActivated)
+                {
+                    if (possibleFileNames.Any(x => filename.EndsWith(x)))
+                    {
+                        ModLogger.Debug($"filename {filename}");
+                    }
+                }
+                
                 string filepath;
                 if (AudioFiles.TryGetValue(StripExtension(filename), out filepath))
                 {
-                    ModLogger.Debug($"filename {filename} found loaded :) test: {filepath}"); 
                     __result = Manager.Load(filepath); 
 
                 }
             }
         }
+
+        //[HarmonyPatch]
+        //class Patch2
+        //{
+        //    [HarmonyPostfix]
+        //    [HarmonyPatch(typeof(AudioManager), "Preload", new[] { typeof(IList<string>), typeof(bool) })]
+        //    public static void Postfix(IList<string> preloadAudioNames, bool isAndroidPreload, Dictionary<string, AudioClip> ___m_SfxBuffer)
+        //    {
+        //        var obj = string.Join(", ", new List<string>(___m_SfxBuffer.Keys).ToArray());
+        //        ModLogger.AddLog("CustomHitSounds", "PostFixPreload", $"m_SfxBuffer keys: [{obj}]");
+
+        //        foreach (var entry in ___m_SfxBuffer)
+        //        {
+        //            ModLogger.Debug($"Saving ${entry.Key}.wav");
+        //            SavWav.Save($"C:/Games/Steam/steamapps/common/Muse Dash/Custom_Sounds/downloaded/{entry.Key}.wav", entry.Value); 
+        //        }
+        //    }
+        //}
 
 
 

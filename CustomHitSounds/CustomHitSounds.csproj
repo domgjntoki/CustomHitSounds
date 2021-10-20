@@ -269,6 +269,7 @@
   <ItemGroup>
     <Compile Include="CustomHitSounds.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SavWav.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="F:\Desktop\Projetos\MuseDash\MuseDashModLoader-master\MuseDashModLoader-master\ModHelper\ModHelper.csproj">
