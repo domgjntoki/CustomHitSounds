@@ -5,7 +5,7 @@ This mod will replace Muse Dash Audio files with yours.
 # How to Install
 Install the [Muse Dash Mod Loader](https://github.com/mo10/MuseDashModLoader/)
 
-Download CustomHitSounds.dll on the [releases page](https://github.com/domgjntoki/CustomHitSounds/releases/tag/Release) and add it to the root of the MuseDash folder 
+Download CustomHitSounds.dll on the [releases page](https://github.com/domgjntoki/CustomHitSounds/releases/tag/Release) and add it to the folder `Muse Dash/Mods `
 
 # How to use it
 To use it, download it on the releases page, and add on the Custom_Sounds folder inside the Muse Dash folder your custom sounds.
