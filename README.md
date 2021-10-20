@@ -22,6 +22,7 @@ Some filenames that I found on the game and its explanations:
 ```yaml
 Hitsounds:
   char_common_empty_atk: Hitsound when you do a empty attack on ground
+  char_common_empty_jump: Hitsound when you do a empty attack on air
   sfx_mezzo_1: Hitsound when successfully hitting small enemies, or geminis.
   sfx_forte_2: Low pitch sound, usually bigger enemy
   sfx_forte_3: Hammers sounds
@@ -47,4 +48,4 @@ To do this, set the Debug Mode option to true like shown:
 ```
 
 One way of using the debug mode is setting your game display as window mode, and recording you playing while showing the console window, so you can see after playing all the notes and audio names.
-
+![Using Debug Mode](readme_resources/DebugExample.png)
