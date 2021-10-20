@@ -6,12 +6,12 @@ To use it, download it on the releases page, and add on the Custom_Sounds folder
 
 For example,
 ```
-MuseDash
+- MuseDash
     CustomHitSounds.json
     - Custom_Sounds
-        - sfx_mezzo_1.wav
-        - sfx_score.wav
-        - char_common_empty_atk.mp3
+        sfx_mezzo_1.wav
+        sfx_score.wav
+        char_common_empty_atk.mp3
 ```
 would replace the sfx_mezzo1, sfx_score and char_common_empty_atk assets from the game with your custom sounds.
 
