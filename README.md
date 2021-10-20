@@ -22,6 +22,7 @@ Some filenames that I found on the game and its explanations:
 ```yaml
 Hitsounds:
   char_common_empty_atk: Hitsound when you do a empty attack on ground
+  char_common_empty_jump: Hitsound for empty no-hit attacs on air
   sfx_mezzo_1: Hitsound when successfully hitting small enemies, or geminis.
   sfx_forte_2: Low pitch sound, usually bigger enemy
   sfx_forte_3: Hammers sounds
@@ -30,6 +31,7 @@ Hitsounds:
   sfx_score: Hitsound for music notes
   sfx_hp: Hitsound for HP notes
   sfx_press_top: Hitsound for Sliders (Stars)
+  sfx_jump: Sound when you jump
 Other sounds:
   char_common_fever: The "Fever!" girl sound
   VoiceMarijaHurt05, VoiceMarijaHurt06, VoiceMarijaHurt09: Sounds that Marija makes when hurt 
