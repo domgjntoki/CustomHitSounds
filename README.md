@@ -47,5 +47,5 @@ To do this, set the Debug Mode option to true like shown:
 }
 ```
 
-One way of using the debug mode is setting your game display as window mode, and recording you playing while showing the console window, so you can see after playing all the notes and audio names.
+One way of using the debug mode is setting your game display as window mode, and recording yourself playing while showing the console window, so you can see after playing all the notes and audio names.
 ![Using Debug Mode](readme_resources/DebugExample.png)
