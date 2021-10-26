@@ -53,8 +53,8 @@ namespace CustomHitSounds
         private static void ResetConfigFile(string configPath)
         {
             var create = JsonConvert.SerializeObject(new Dictionary<String, bool> {
-                    { "debug_mode", false }
-                });
+                    { "debug_mode", false},
+            });
             var tw = new StreamWriter(configPath);
             tw.Write(create);
             tw.Close();
@@ -124,48 +124,30 @@ namespace CustomHitSounds
         class Patch
         {
             private static List<String> downloaded = new List<String>();
-            [HarmonyPostfix]
+            [HarmonyPrefix]
             [HarmonyPatch(typeof(AssetBundle), "LoadAsset", new Type[] { typeof(string), typeof(Type) })]
-            public static void LoadAssetPostfix(string name, Type type, ref UnityEngine.Object __result)
+            public static bool LoadAssetPostfix(string name, Type type, ref UnityEngine.Object __result)
             {
                 var separated = name.Split('/');
                 var filename = separated[separated.Length - 1];
                 if (IsDebugModeActivated)
                 {
-                    if (possibleFileNames.Any(x => filename.EndsWith(x)))
-                    {
+                    //if (possibleFileNames.Any(x => filename.EndsWith(x)))
+                    //{
                         ModLogger.Debug($"filename {filename}");
-                    }
+                    //}
                 }
-                
+
+
                 string filepath;
                 if (AudioFiles.TryGetValue(StripExtension(filename), out filepath))
                 {
-                    __result = Manager.Load(filepath); 
-
+                    __result = Manager.Load(filepath);
+                    return false;
                 }
+
+                return true;
             }
         }
-
-        //[HarmonyPatch]
-        //class Patch2
-        //{
-        //    [HarmonyPostfix]
-        //    [HarmonyPatch(typeof(AudioManager), "Preload", new[] { typeof(IList<string>), typeof(bool) })]
-        //    public static void Postfix(IList<string> preloadAudioNames, bool isAndroidPreload, Dictionary<string, AudioClip> ___m_SfxBuffer)
-        //    {
-        //        var obj = string.Join(", ", new List<string>(___m_SfxBuffer.Keys).ToArray());
-        //        ModLogger.AddLog("CustomHitSounds", "PostFixPreload", $"m_SfxBuffer keys: [{obj}]");
-
-        //        foreach (var entry in ___m_SfxBuffer)
-        //        {
-        //            ModLogger.Debug($"Saving ${entry.Key}.wav");
-        //            SavWav.Save($"C:/Games/Steam/steamapps/common/Muse Dash/Custom_Sounds/downloaded/{entry.Key}.wav", entry.Value); 
-        //        }
-        //    }
-        //}
-
-
-
     }
 }
