@@ -1,5 +1,11 @@
 
+# CustomHitSounds
 This mod will replace Muse Dash Audio files with yours.
+
+# How to Install
+Install the [Muse Dash Mod Loader](https://github.com/mo10/MuseDashModLoader/). If the ModLoader it's broken on the Mod Loader github releases page, get the latest release on the [Muse Dash Mod Community Discord Server](https://discord.gg/mdmc)
+
+Download CustomHitSounds.dll on the [releases page](https://github.com/domgjntoki/CustomHitSounds/releases/tag/Release) and add it to the folder `Muse Dash/Mods `
 
 # How to use it
 To use it, download it on the releases page, and add on the Custom_Sounds folder inside the Muse Dash folder your custom sounds.
@@ -50,3 +56,6 @@ To do this, set the Debug Mode option to true like shown:
 
 One way of using the debug mode is setting your game display as window mode, and recording you playing while showing the console window, so you can see after playing all the notes and audio names.
 
+Image showing the Debug Mode activated:
+![Using debug mode](readme_resources/DebugExample.png)
+![Debug Window](readme_resources/DebugLog.png)
