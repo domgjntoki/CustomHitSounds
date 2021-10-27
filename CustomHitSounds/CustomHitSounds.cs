@@ -23,15 +23,12 @@ namespace CustomHitSounds
     public class CustomHitSounds : IMod
     {
         private static String Custom_Sounds_Path = "Custom_Sounds";
-        private static Dictionary<String, String> AudioFiles = new Dictionary<String, String>();
-        private static bool IsDebugModeActivated = false;
-        private static string[] possibleFileNames = new string[]
-            {
-                ".aiff",
-                ".mp3",
-                ".ogg",
-                ".wav"
-            };
+        private static Dictionary<String, String> _audioFiles = new Dictionary<String, String>();
+        private static Config _config = null;
+        private static readonly string[] PossibleFileNames =
+        {
+            ".aiff", ".mp3", ".ogg", ".wav"
+        };
 
         public string Name => "CustomHitSounds";
 
@@ -44,64 +41,22 @@ namespace CustomHitSounds
         public void DoPatching()
         {
             Harmony harmony = new Harmony("com.domgintoki.customhitsounds");
-            IsDebugModeActivated = GetDebugModeOption();
-            AudioFiles = GetAllAudioFiles();
+            _config = ConfigLoader.GetConfig();
+            _audioFiles = GetAllAudioFiles();
             harmony.PatchAll();
             ModLogger.Debug("CustomHitSounds loaded successfully");
         }
 
-        private static void ResetConfigFile(string configPath)
-        {
-            var create = JsonConvert.SerializeObject(new Dictionary<String, bool> {
-                    { "debug_mode", false},
-            });
-            var tw = new StreamWriter(configPath);
-            tw.Write(create);
-            tw.Close();
-        }
-        private static bool GetDebugModeOption()
-        {
-            var configPath = "CustomHitSounds.json";
-            if (!File.Exists(configPath))
-            {
-                ResetConfigFile(configPath);
-                return false;
-            } 
-            else
-            {
-                string json = File.ReadAllText(configPath);
-                Dictionary<String, bool> dict = null;
-                try
-                {
-                    dict = JsonConvert.DeserializeObject<Dictionary<String, bool>>(json);
-                } catch(Exception)  { }
-
-                bool should;
-                if(dict == null || !dict.TryGetValue("debug_mode", out should))
-                {
-                    ModLogger.Debug("Incorrect json file, recreating.");
-                    ResetConfigFile(configPath);
-                    return false;
-                }  else
-                {
-                    return should;
-                }
-
-                                
-            }
-
-        }
-
-        private static String StripExtension(string filename)
+        private static string StripExtension(string filename)
         {
             if (filename.Contains("."))
-                return filename.Substring(0, filename.LastIndexOf("."));
+                return filename.Substring(0, filename.LastIndexOf(".", StringComparison.Ordinal));
             else
                 return filename;
         }
-        private static Dictionary<String, String> GetAllAudioFiles()
+        private static Dictionary<string, string> GetAllAudioFiles()
         {
-            var filesInfo = new Dictionary<String, String>();
+            var filesInfo = new Dictionary<string, string>();
             if (!Directory.Exists(Custom_Sounds_Path))
             {
                 Directory.CreateDirectory(Custom_Sounds_Path);
@@ -113,7 +68,7 @@ namespace CustomHitSounds
             var files = d.GetFiles();
             foreach(var file in files)
             {
-                if (possibleFileNames.Contains(file.Extension)) {
+                if (PossibleFileNames.Contains(file.Extension)) {
                     filesInfo[StripExtension(file.Name)] = file.FullName;
                 }
             }
@@ -123,26 +78,27 @@ namespace CustomHitSounds
         [HarmonyPatch]
         class Patch
         {
-            private static List<String> downloaded = new List<String>();
             [HarmonyPrefix]
             [HarmonyPatch(typeof(AssetBundle), "LoadAsset", new Type[] { typeof(string), typeof(Type) })]
-            public static bool LoadAssetPostfix(string name, Type type, ref UnityEngine.Object __result)
+            // ReSharper disable once InconsistentNaming
+            public static bool LoadAssetPrefix(string name, Type type, ref UnityEngine.Object __result)
             {
                 var separated = name.Split('/');
                 var filename = separated[separated.Length - 1];
-                if (IsDebugModeActivated)
+                if (_config.ShouldDebug)
                 {
-                    //if (possibleFileNames.Any(x => filename.EndsWith(x)))
-                    //{
-                        ModLogger.Debug($"filename {filename}");
-                    //}
+                    if (_config.DebugFileExtensions.Any(x => filename.EndsWith(x)))
+                    {
+                        ModLogger.Debug($"Loading Asset ({type}) {filename}");
+                    }
                 }
 
-
-                string filepath;
-                if (AudioFiles.TryGetValue(StripExtension(filename), out filepath))
+                if (PossibleFileNames.Any(x => filename.EndsWith(x)) &&
+                    _audioFiles.TryGetValue(StripExtension(filename), out var filepath) &&
+                    type == typeof(AudioClip))
                 {
-                    __result = Manager.Load(filepath);
+                    if (typeof(AudioClip) == type)
+                        __result = Manager.Load(filepath);
                     return false;
                 }
 

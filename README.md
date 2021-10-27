@@ -21,7 +21,7 @@ For example,
 ```
 would replace the sfx_mezzo1, sfx_score and char_common_empty_atk assets from the game with your custom sounds.
 
-The supported file extensions are [.aiff, .mp3, .ogg, .wav]
+The supported file extensions are [.aiff, .mp3, .ogg, .wav] (working on other types of assets)
 
 Some filenames that I found on the game and its explanations:
 
@@ -47,10 +47,17 @@ Other sounds:
 The Debug Mode will show on the Muse Dash ModLoader Console each and every audio asset that the game is using, so you can identify what audio you need to modify.
 
 You can activate the debug mode by setting this option on the CustomHitSounds.json file.
-To do this, set the Debug Mode option to true like shown:
+To do this, set the ShouldDebug option to true,
+and set the file extensions that you want shown on the DebugMode.
+
+Example:
 ```json
 {
-  "debug_mode": true
+  "ShouldDebug": true,
+  "DebugFileExtensions": [
+    ".aiff", ".mp3", ".ogg", ".wav", ".json", ".prefab",
+    ".asset"
+  ]
 }
 ```
 
